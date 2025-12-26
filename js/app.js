@@ -30,13 +30,6 @@ cityInput.addEventListener('keypress', (event) => {
     }
 });
 
-// Buscar automáticamente al cambiar país si hay ciudad
-countrySelect.addEventListener('change', () => {
-    if (cityInput.value.trim()) {
-        handleSearch();
-    }
-});
-
 // Función principal: búsqueda
 function handleSearch() {
     const city = cityInput.value.trim();
