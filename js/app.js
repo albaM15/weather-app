@@ -1,5 +1,6 @@
 // Elementos del DOM
 const cityInput = document.getElementById('cityInput');
+const countrySelect = document.getElementById('countrySelect');
 const searchBtn = document.getElementById('searchBtn');
 const weatherCard = document.getElementById('weatherCard');
 const loadingSpinner = document.getElementById('loadingSpinner');
@@ -29,17 +30,28 @@ cityInput.addEventListener('keypress', (event) => {
     }
 });
 
+// Buscar automáticamente al cambiar país si hay ciudad
+countrySelect.addEventListener('change', () => {
+    if (cityInput.value.trim()) {
+        handleSearch();
+    }
+});
+
 // Función principal: búsqueda
 function handleSearch() {
     const city = cityInput.value.trim();
+    const country = countrySelect.value;
 
     if (!city) {
         showError('Por favor, ingresa una ciudad');
         return;
     }
 
+    // Construir búsqueda: "ciudad,código_país" o solo "ciudad"
+    const searchQuery = country ? `${city},${country}` : city;
+
     clearError();
-    fetchWeatherData(city);
+    fetchWeatherData(searchQuery);
 }
 
 // Obtener datos del clima desde la API

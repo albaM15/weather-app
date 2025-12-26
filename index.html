@@ -23,13 +23,42 @@
             <!-- Sección de búsqueda -->
             <section class="search-section">
                 <div class="search-container">
-                    <input 
-                        type="text" 
-                        id="cityInput" 
-                        class="city-input" 
-                        placeholder="Ingresa una ciudad..."
-                        aria-label="Campo de búsqueda de ciudad"
-                    >
+                    <div class="search-inputs">
+                        <input 
+                            type="text" 
+                            id="cityInput" 
+                            class="city-input" 
+                            placeholder="Ciudad..."
+                            aria-label="Campo de búsqueda de ciudad"
+                        >
+                        <select 
+                            id="countrySelect" 
+                            class="country-select" 
+                            aria-label="Seleccionar país"
+                        >
+                            <option value="">Todos los países</option>
+                            <option value="ES">🇪🇸 España</option>
+                            <option value="US">🇺🇸 Estados Unidos</option>
+                            <option value="MX">🇲🇽 México</option>
+                            <option value="AR">🇦🇷 Argentina</option>
+                            <option value="CL">🇨🇱 Chile</option>
+                            <option value="CO">🇨🇴 Colombia</option>
+                            <option value="PE">🇵🇪 Perú</option>
+                            <option value="VE">🇻🇪 Venezuela</option>
+                            <option value="GB">🇬🇧 Reino Unido</option>
+                            <option value="FR">🇫🇷 Francia</option>
+                            <option value="DE">🇩🇪 Alemania</option>
+                            <option value="IT">🇮🇹 Italia</option>
+                            <option value="PT">🇵🇹 Portugal</option>
+                            <option value="BR">🇧🇷 Brasil</option>
+                            <option value="JP">🇯🇵 Japón</option>
+                            <option value="CN">🇨🇳 China</option>
+                            <option value="IN">🇮🇳 India</option>
+                            <option value="AU">🇦🇺 Australia</option>
+                            <option value="CA">🇨🇦 Canadá</option>
+                            <option value="RU">🇷🇺 Rusia</option>
+                        </select>
+                    </div>
                     <button 
                         id="searchBtn" 
                         class="search-btn" 
