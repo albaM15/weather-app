@@ -99,23 +99,32 @@ function updateWeatherUI(data) {
     weatherCard.style.display = 'block';
     weatherCard.style.animation = 'slideUp 0.6s ease';
 
-    // Determinar si es día, tarde o noche
-    const timeOfDay = getTimeOfDay(dt, sunrise, sunset);
+    // El icono ya tiene la información correcta de día/noche de la ciudad
+    // Usamos eso como fuente de verdad
+    const timeOfDay = getTimeOfDay(icon, dt, sunrise, sunset);
     applyTheme(timeOfDay);
+    
+    console.log(`🌍 ${name} - Icon: ${icon} | Theme: ${timeOfDay}`);
 }
 
 // Determinar si es día, tarde o noche
-function getTimeOfDay(currentTime, sunrise, sunset) {
-    // sunrise y sunset vienen en segundos de Unix
-    if (currentTime >= sunrise && currentTime < sunset) {
-        // Calcular si es mañana (antes del mediodía) o tarde (después)
-        const sunrisePlus6Hours = sunrise + (6 * 3600); // 6 horas después del amanecer
-        if (currentTime < sunrisePlus6Hours) {
-            return 'morning'; // 🌅 Mañana (temprano)
-        }
-        return 'afternoon'; // ☀️ Tarde/Día
+// El icono termina en 'd' (día) o 'n' (noche) - OpenWeatherMap calcula esto correctamente
+function getTimeOfDay(iconCode, currentTime, sunrise, sunset) {
+    const isNight = iconCode.endsWith('n');
+    
+    if (isNight) {
+        return 'night'; // 🌙 Noche
     }
-    return 'night'; // 🌙 Noche
+    
+    // Es de día - ahora diferenciamos entre mañana y tarde
+    // Calculamos si estamos en la primera mitad del día (mañana) o segunda mitad (tarde)
+    const dayDuration = sunset - sunrise;
+    const sunriseMiddle = sunrise + (dayDuration / 2); // Mediodía astronómico
+    
+    if (currentTime < sunriseMiddle) {
+        return 'morning'; // 🌅 Mañana
+    }
+    return 'afternoon'; // ☀️ Tarde/Día
 }
 
 // Aplicar tema según hora del día
