@@ -28,6 +28,22 @@ body {
     background-size: 400% 400%;
     animation: gradientShift 15s ease infinite;
     z-index: -1;
+    transition: all 1s ease;
+}
+
+/* Tema Mañana - Colores cálidos y suaves */
+.background.theme-morning {
+    background: linear-gradient(135deg, #FFB347 0%, #FFD700 25%, #FFA07A 50%, #87CEEB 75%, #E0FFFF 100%);
+}
+
+/* Tema Tarde/Día - Colores vibrantes y brillantes */
+.background.theme-afternoon {
+    background: linear-gradient(135deg, #E2852E 0%, #F5C857 25%, #FFEE91 50%, #ABE0F0 75%, #87CEEB 100%);
+}
+
+/*  Tema Noche - Colores oscuros y profundos */
+.background.theme-night {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #2d4a7c 75%, #483d8b 100%);
 }
 
 @keyframes gradientShift {

@@ -82,7 +82,9 @@ function updateWeatherUI(data) {
         name,
         main: { temp, humidity: humid },
         weather: [{ description, icon }],
-        wind: { speed }
+        wind: { speed },
+        sys: { sunrise, sunset },
+        dt
     } = data;
 
     cityName.textContent = name;
@@ -96,6 +98,35 @@ function updateWeatherUI(data) {
 
     weatherCard.style.display = 'block';
     weatherCard.style.animation = 'slideUp 0.6s ease';
+
+    // Determinar si es día, tarde o noche
+    const timeOfDay = getTimeOfDay(dt, sunrise, sunset);
+    applyTheme(timeOfDay);
+}
+
+// Determinar si es día, tarde o noche
+function getTimeOfDay(currentTime, sunrise, sunset) {
+    // sunrise y sunset vienen en segundos de Unix
+    if (currentTime >= sunrise && currentTime < sunset) {
+        // Calcular si es mañana (antes del mediodía) o tarde (después)
+        const sunrisePlus6Hours = sunrise + (6 * 3600); // 6 horas después del amanecer
+        if (currentTime < sunrisePlus6Hours) {
+            return 'morning'; // 🌅 Mañana (temprano)
+        }
+        return 'afternoon'; // ☀️ Tarde/Día
+    }
+    return 'night'; // 🌙 Noche
+}
+
+// Aplicar tema según hora del día
+function applyTheme(timeOfDay) {
+    const background = document.querySelector('.background');
+    
+    // Remover todas las clases de tema
+    background.classList.remove('theme-morning', 'theme-afternoon', 'theme-night');
+    
+    // Agregar la clase correspondiente
+    background.classList.add(`theme-${timeOfDay}`);
 }
 
 // Mostrar error
