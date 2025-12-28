@@ -1,6 +1,9 @@
 {
-  "buildCommand": "npm install",
-  "outputDirectory": ".",
-  "framework": "html",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
