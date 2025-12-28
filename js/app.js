@@ -21,6 +21,61 @@ if (!API_KEY) {
     console.error('⚠️ API_KEY no configurada. Abre js/config.js y agrega tu API Key.');
 }
 
+
+async function loadCountries() {
+    try {
+        
+        const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,translations');
+        const data = await response.json();
+
+        // 2. Transformar datos: extraer código y nombre en español
+        const countries = data.map(country => {
+            return {
+                code: country.cca2,
+                // Usar nombre en español si existe, si no, usar nombre en inglés
+                name: country.translations?.spa?.common || country.name?.common || country.cca2
+            };
+        });
+
+        // Ordenar alfabéticamente
+        countries.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+
+        // Llenar el select con las opciones
+        countries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country.code;
+            option.textContent = country.name;
+            countrySelect.appendChild(option);
+        });
+
+        // Cambiar el texto de la primera opción de "Cargando..." a "Todos los países"
+        countrySelect.options[0].textContent = "Todos los países";
+        countrySelect.options[0].disabled = false;
+
+    } catch (error) {
+        console.error("Error cargando países desde API:", error);
+        // Fallback: agregar algunos países de respaldo en caso de falla de API
+        const fallbackCountries = [
+            { code: 'US', name: 'Estados Unidos' },
+            { code: 'ES', name: 'España' },
+            { code: 'AR', name: 'Argentina' },
+            { code: 'BR', name: 'Brasil' },
+            { code: 'MX', name: 'México' }
+        ];
+        fallbackCountries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country.code;
+            option.textContent = country.name;
+            countrySelect.appendChild(option);
+        });
+        countrySelect.options[0].textContent = "Todos los países";
+        countrySelect.options[0].disabled = false;
+    }
+}
+
+// Ejecutar carga de países cuando el DOM esté listo
+loadCountries();
+
 // Eventos principales
 searchBtn.addEventListener('click', handleSearch);
 
