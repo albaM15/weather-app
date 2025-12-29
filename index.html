@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App - Aplicación del Clima</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <div class="container">
         <!-- Fondo con efecto de gradiente -->
@@ -24,26 +27,13 @@
             <section class="search-section">
                 <div class="search-container">
                     <div class="search-inputs">
-                        <input 
-                            type="text" 
-                            id="cityInput" 
-                            class="city-input" 
-                            placeholder="Ciudad..."
-                            aria-label="Campo de búsqueda de ciudad"
-                        >
-                        <select 
-                            id="countrySelect" 
-                            class="country-select" 
-                            aria-label="Seleccionar país"
-                        >
+                        <input type="text" id="cityInput" class="city-input" placeholder="Ciudad..."
+                            aria-label="Campo de búsqueda de ciudad">
+                        <select id="countrySelect" class="country-select" aria-label="Seleccionar país">
                             <option value="" disabled selected>Cargando países...</option>
                         </select>
                     </div>
-                    <button 
-                        id="searchBtn" 
-                        class="search-btn" 
-                        aria-label="Botón de búsqueda"
-                    >
+                    <button id="searchBtn" class="search-btn" aria-label="Botón de búsqueda">
                         <span>Buscar</span>
                     </button>
                 </div>
@@ -96,7 +86,8 @@
         </footer>
     </div>
 
-    <script type="module" src="/js/config.js"></script>
-    <script type="module" src="/js/app.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
 </body>
+
 </html>

@@ -24,7 +24,7 @@ if (!API_KEY) {
 
 async function loadCountries() {
     try {
-        
+
         const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,translations');
         const data = await response.json();
 
@@ -161,7 +161,7 @@ function updateWeatherUI(data) {
     // Usamos eso como fuente de verdad
     const timeOfDay = getTimeOfDay(icon, dt, sunrise, sunset);
     applyTheme(timeOfDay);
-    
+
     console.log(`🌍 ${name} - Icon: ${icon} | Theme: ${timeOfDay}`);
 }
 
@@ -169,16 +169,16 @@ function updateWeatherUI(data) {
 // El icono termina en 'd' (día) o 'n' (noche) - OpenWeatherMap calcula esto correctamente
 function getTimeOfDay(iconCode, currentTime, sunrise, sunset) {
     const isNight = iconCode.endsWith('n');
-    
+
     if (isNight) {
         return 'night'; // 🌙 Noche
     }
-    
+
     // Es de día - ahora diferenciamos entre mañana y tarde
     // Calculamos si estamos en la primera mitad del día (mañana) o segunda mitad (tarde)
     const dayDuration = sunset - sunrise;
     const sunriseMiddle = sunrise + (dayDuration / 2); // Mediodía astronómico
-    
+
     if (currentTime < sunriseMiddle) {
         return 'morning'; // 🌅 Mañana
     }
@@ -188,10 +188,10 @@ function getTimeOfDay(iconCode, currentTime, sunrise, sunset) {
 // Aplicar tema según hora del día
 function applyTheme(timeOfDay) {
     const background = document.querySelector('.background');
-    
+
     // Remover todas las clases de tema
     background.classList.remove('theme-morning', 'theme-afternoon', 'theme-night');
-    
+
     // Agregar la clase correspondiente
     background.classList.add(`theme-${timeOfDay}`);
 }
