@@ -4,4 +4,4 @@
 echo "🚀 Iniciando Weather App..."
 echo "🌐 Abriendo en http://localhost:8000"
 
-python3 -m http.server 8000 --directory /home/alba/dev/weather
+node server.js
