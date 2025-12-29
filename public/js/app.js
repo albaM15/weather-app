@@ -136,7 +136,7 @@ function updateWeatherUI(data) {
     const {
         name,
         main: { temp, humidity: humid },
-        weather: [{ description, icon }],
+        weather: [{ icon, description }],
         wind: { speed },
         sys: { sunrise, sunset },
         dt
@@ -150,6 +150,7 @@ function updateWeatherUI(data) {
 
     weatherIcon.src = `https://openweathermap.org/img/wn/${icon}@4x.png`;
     weatherIcon.alt = description;
+    weatherIcon.style.display = 'block';
     weatherIcon.onerror = () => {
         weatherIcon.src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
     };
