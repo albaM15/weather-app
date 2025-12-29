@@ -150,6 +150,9 @@ function updateWeatherUI(data) {
 
     weatherIcon.src = `https://openweathermap.org/img/wn/${icon}@4x.png`;
     weatherIcon.alt = description;
+    weatherIcon.onerror = () => {
+        weatherIcon.src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+    };
 
     weatherCard.style.display = 'block';
     weatherCard.style.animation = 'slideUp 0.6s ease';
