@@ -24,16 +24,18 @@ if (!API_KEY) {
 // Estado de conexión
 let isOnline = navigator.onLine;
 
-// Función para verificar conectividad
-function checkConnection() {
-    return navigator.onLine;
-}
+// Constantes para mensajes de error
+const ERROR_MESSAGES = {
+    NO_CONNECTION: 'Sin conexión a Internet. Verifica tu WiFi o datos móviles.',
+    CONNECTION_RESTORED: 'Conexión restablecida ✓',
+    GENERIC_ERROR: 'Error de conexión. Por favor, intenta nuevamente.'
+};
 
 // Mostrar notificación de estado de conexión
 function showConnectionStatus(online) {
     const message = online 
-        ? 'Conexión restablecida ✓' 
-        : 'Sin conexión a Internet. Verifica tu WiFi.';
+        ? ERROR_MESSAGES.CONNECTION_RESTORED
+        : ERROR_MESSAGES.NO_CONNECTION;
     
     showError(message);
     
@@ -58,13 +60,33 @@ window.addEventListener('offline', () => {
     console.log('📡 Sin conexión a Internet');
 });
 
+// Función para cargar países de respaldo
+function loadFallbackCountries() {
+    const fallbackCountries = [
+        { code: 'US', name: 'Estados Unidos' },
+        { code: 'ES', name: 'España' },
+        { code: 'AR', name: 'Argentina' },
+        { code: 'BR', name: 'Brasil' },
+        { code: 'MX', name: 'México' }
+    ];
+    fallbackCountries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country.code;
+        option.textContent = country.name;
+        countrySelect.appendChild(option);
+    });
+    countrySelect.options[0].textContent = "Todos los países";
+    countrySelect.options[0].disabled = false;
+}
+
 
 async function loadCountries() {
     try {
-        // Verificar conexión antes de hacer la petición
-        if (!checkConnection()) {
+        // Si no hay conexión, usar directamente los países de respaldo
+        if (!navigator.onLine) {
             console.warn('Sin conexión. Usando países de respaldo.');
-            throw new Error('No hay conexión a Internet');
+            loadFallbackCountries();
+            return;
         }
 
         const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,translations');
@@ -97,21 +119,7 @@ async function loadCountries() {
     } catch (error) {
         console.error("Error cargando países desde API:", error);
         // Fallback: agregar algunos países de respaldo en caso de falla de API
-        const fallbackCountries = [
-            { code: 'US', name: 'Estados Unidos' },
-            { code: 'ES', name: 'España' },
-            { code: 'AR', name: 'Argentina' },
-            { code: 'BR', name: 'Brasil' },
-            { code: 'MX', name: 'México' }
-        ];
-        fallbackCountries.forEach(country => {
-            const option = document.createElement('option');
-            option.value = country.code;
-            option.textContent = country.name;
-            countrySelect.appendChild(option);
-        });
-        countrySelect.options[0].textContent = "Todos los países";
-        countrySelect.options[0].disabled = false;
+        loadFallbackCountries();
     }
 }
 
@@ -138,8 +146,8 @@ function handleSearch() {
     }
 
     // Verificar conexión antes de buscar
-    if (!checkConnection()) {
-        showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+    if (!navigator.onLine) {
+        showError(ERROR_MESSAGES.NO_CONNECTION);
         return;
     }
 
@@ -156,8 +164,8 @@ async function fetchWeatherData(city) {
         showLoading(true);
 
         // Verificar conexión antes de hacer la petición
-        if (!checkConnection()) {
-            showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+        if (!navigator.onLine) {
+            showError(ERROR_MESSAGES.NO_CONNECTION);
             showLoading(false);
             return;
         }
@@ -182,10 +190,10 @@ async function fetchWeatherData(city) {
     } catch (error) {
         console.error('Error:', error);
         // Diferenciar entre error de red y otros errores
-        if (!checkConnection()) {
-            showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+        if (!navigator.onLine) {
+            showError(ERROR_MESSAGES.NO_CONNECTION);
         } else {
-            showError('Error de conexión. Por favor, intenta nuevamente.');
+            showError(ERROR_MESSAGES.GENERIC_ERROR);
         }
         showLoading(false);
     }
@@ -300,8 +308,8 @@ async function fetchWeatherByCoordinates(lat, lon) {
         showLoading(true);
         
         // Verificar conexión antes de hacer la petición
-        if (!checkConnection()) {
-            showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+        if (!navigator.onLine) {
+            showError(ERROR_MESSAGES.NO_CONNECTION);
             showLoading(false);
             return;
         }
@@ -319,8 +327,11 @@ async function fetchWeatherByCoordinates(lat, lon) {
 
     } catch (error) {
         console.error('Error:', error);
-        if (!checkConnection()) {
-            showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+        // Diferenciar entre error de red y otros errores
+        if (!navigator.onLine) {
+            showError(ERROR_MESSAGES.NO_CONNECTION);
+        } else {
+            showError(ERROR_MESSAGES.GENERIC_ERROR);
         }
         showLoading(false);
     }
