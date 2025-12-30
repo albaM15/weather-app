@@ -39,10 +39,10 @@ npm install
 ### Ejecutar Localmente
 
 ```bash
-npm start
+npm run preview
 ```
 
-Luego abre **http://localhost:8000** en tu navegador.
+Luego abre **http://localhost:4173** en tu navegador (o el puerto que muestre en la terminal).
 
 ---
 
