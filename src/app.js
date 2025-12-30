@@ -1,6 +1,7 @@
 // Elementos del DOM
 const cityInput = document.getElementById('cityInput');
-const countrySelect = document.getElementById('countrySelect');
+const countryInput = document.getElementById('countryInput');
+const countrySuggestions = document.getElementById('countrySuggestions');
 const searchBtn = document.getElementById('searchBtn');
 const weatherCard = document.getElementById('weatherCard');
 const loadingSpinner = document.getElementById('loadingSpinner');
@@ -21,8 +22,10 @@ if (!API_KEY) {
     console.error('⚠️ API_KEY no configurada. Abre src/config.js y agrega tu API Key.');
 }
 
-// Estado de conexión
+// Variables globales
 let isOnline = navigator.onLine;
+let allCountries = []; // Almacena todos los países
+let selectedCountryCode = ''; // Almacena el código del país seleccionado
 
 // Constantes para mensajes de error
 const ERROR_MESSAGES = {
@@ -62,21 +65,13 @@ window.addEventListener('offline', () => {
 
 // Función para cargar países de respaldo
 function loadFallbackCountries() {
-    const fallbackCountries = [
+    allCountries = [
         { code: 'US', name: 'Estados Unidos' },
         { code: 'ES', name: 'España' },
         { code: 'AR', name: 'Argentina' },
         { code: 'BR', name: 'Brasil' },
         { code: 'MX', name: 'México' }
     ];
-    fallbackCountries.forEach(country => {
-        const option = document.createElement('option');
-        option.value = country.code;
-        option.textContent = country.name;
-        countrySelect.appendChild(option);
-    });
-    countrySelect.options[0].textContent = "Todos los países";
-    countrySelect.options[0].disabled = false;
 }
 
 
@@ -92,39 +87,98 @@ async function loadCountries() {
         const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,translations');
         const data = await response.json();
 
-        // 2. Transformar datos: extraer código y nombre en español
-        const countries = data.map(country => {
+        // Transformar datos: extraer código y nombre en español
+        allCountries = data.map(country => {
             return {
                 code: country.cca2,
-                // Usar nombre en español si existe, si no, usar nombre en inglés
                 name: country.translations?.spa?.common || country.name?.common || country.cca2
             };
         });
 
         // Ordenar alfabéticamente
-        countries.sort((a, b) => a.name.localeCompare(b.name, 'es'));
-
-        // Llenar el select con las opciones
-        countries.forEach(country => {
-            const option = document.createElement('option');
-            option.value = country.code;
-            option.textContent = country.name;
-            countrySelect.appendChild(option);
-        });
-
-        // Cambiar el texto de la primera opción de "Cargando..." a "Todos los países"
-        countrySelect.options[0].textContent = "Todos los países";
-        countrySelect.options[0].disabled = false;
+        allCountries.sort((a, b) => a.name.localeCompare(b.name, 'es'));
 
     } catch (error) {
         console.error("Error cargando países desde API:", error);
-        // Fallback: agregar algunos países de respaldo en caso de falla de API
         loadFallbackCountries();
     }
 }
 
 // Ejecutar carga de países cuando el DOM esté listo
 loadCountries();
+
+// Función para filtrar y mostrar sugerencias de países
+function showCountrySuggestions(inputValue) {
+    countrySuggestions.innerHTML = '';
+    
+    if (!inputValue.trim()) {
+        countrySuggestions.style.display = 'none';
+        return;
+    }
+
+    const searchTerm = inputValue.toLowerCase().trim();
+    const filtered = allCountries.filter(country => 
+        country.name.toLowerCase().includes(searchTerm) ||
+        country.code.toLowerCase().includes(searchTerm)
+    );
+
+    if (filtered.length === 0) {
+        countrySuggestions.style.display = 'none';
+        return;
+    }
+
+    filtered.forEach((country, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${country.name} (${country.code})`;
+        li.dataset.code = country.code;
+        li.dataset.name = country.name;
+        li.className = country.code === selectedCountryCode ? 'selected' : '';
+        
+        li.addEventListener('click', () => selectCountry(country.code, country.name));
+        li.addEventListener('mouseover', () => {
+            document.querySelectorAll('.country-suggestions li').forEach(item => 
+                item.classList.remove('highlighted')
+            );
+            li.classList.add('highlighted');
+        });
+        
+        countrySuggestions.appendChild(li);
+    });
+
+    countrySuggestions.style.display = 'block';
+}
+
+// Función para seleccionar un país
+function selectCountry(code, name) {
+    selectedCountryCode = code;
+    countryInput.value = name;
+    countrySuggestions.style.display = 'none';
+}
+
+// Event listeners para el input de país
+countryInput.addEventListener('input', (e) => {
+    showCountrySuggestions(e.target.value);
+});
+
+countryInput.addEventListener('focus', (e) => {
+    if (e.target.value.trim()) {
+        showCountrySuggestions(e.target.value);
+    }
+});
+
+// Cerrar sugerencias al hacer clic fuera
+document.addEventListener('click', (e) => {
+    if (e.target !== countryInput && !e.target.closest('.country-suggestions')) {
+        countrySuggestions.style.display = 'none';
+    }
+});
+
+// Cerrar sugerencias con Escape
+countryInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        countrySuggestions.style.display = 'none';
+    }
+});
 
 // Eventos principales
 searchBtn.addEventListener('click', handleSearch);
@@ -138,10 +192,15 @@ cityInput.addEventListener('keypress', (event) => {
 // Función principal: búsqueda
 function handleSearch() {
     const city = cityInput.value.trim();
-    const country = countrySelect.value;
+    const country = selectedCountryCode;
 
     if (!city) {
         showError('Por favor, ingresa una ciudad');
+        return;
+    }
+
+    if (!country) {
+        showError('Por favor, selecciona un país');
         return;
     }
 
@@ -151,8 +210,8 @@ function handleSearch() {
         return;
     }
 
-    // Construir búsqueda: "ciudad,código_país" o solo "ciudad"
-    const searchQuery = country ? `${city},${country}` : city;
+    // Construir búsqueda: "ciudad,código_país"
+    const searchQuery = `${city},${country}`;
 
     clearError();
     fetchWeatherData(searchQuery);

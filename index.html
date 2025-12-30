@@ -29,9 +29,11 @@
                     <div class="search-inputs">
                         <input type="text" id="cityInput" class="city-input" placeholder="Ciudad..."
                             aria-label="Campo de búsqueda de ciudad">
-                        <select id="countrySelect" class="country-select" aria-label="Seleccionar país">
-                            <option value="" disabled selected>Cargando países...</option>
-                        </select>
+                        <div class="country-search-container">
+                            <input type="text" id="countryInput" class="country-input" placeholder="País..."
+                                aria-label="Buscar y seleccionar país">
+                            <ul id="countrySuggestions" class="country-suggestions" style="display: none;"></ul>
+                        </div>
                     </div>
                     <button id="searchBtn" class="search-btn" aria-label="Botón de búsqueda">
                         <span>Buscar</span>
