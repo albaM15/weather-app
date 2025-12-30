@@ -13,7 +13,7 @@ const humidity = document.getElementById('humidity');
 const windSpeed = document.getElementById('windSpeed');
 
 // Configuración
-const API_KEY = window.APP_CONFIG?.API_KEY || import.meta.env.VITE_API_KEY || '';
+const API_KEY = window.APP_CONFIG?.API_KEY || '';
 const API_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
 // Validar que API_KEY existe
