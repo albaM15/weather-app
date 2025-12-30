@@ -21,9 +21,51 @@ if (!API_KEY) {
     console.error('⚠️ API_KEY no configurada. Abre js/config.js y agrega tu API Key.');
 }
 
+// Estado de conexión
+let isOnline = navigator.onLine;
+
+// Función para verificar conectividad
+function checkConnection() {
+    return navigator.onLine;
+}
+
+// Mostrar notificación de estado de conexión
+function showConnectionStatus(online) {
+    const message = online 
+        ? 'Conexión restablecida ✓' 
+        : 'Sin conexión a Internet. Verifica tu WiFi.';
+    
+    showError(message);
+    
+    if (online) {
+        // Limpiar el mensaje de conexión restablecida después de 3 segundos
+        setTimeout(() => {
+            clearError();
+        }, 3000);
+    }
+}
+
+// Event listeners para cambios de conectividad
+window.addEventListener('online', () => {
+    isOnline = true;
+    showConnectionStatus(true);
+    console.log('📡 Conexión restablecida');
+});
+
+window.addEventListener('offline', () => {
+    isOnline = false;
+    showConnectionStatus(false);
+    console.log('📡 Sin conexión a Internet');
+});
+
 
 async function loadCountries() {
     try {
+        // Verificar conexión antes de hacer la petición
+        if (!checkConnection()) {
+            console.warn('Sin conexión. Usando países de respaldo.');
+            throw new Error('No hay conexión a Internet');
+        }
 
         const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,translations');
         const data = await response.json();
@@ -95,6 +137,12 @@ function handleSearch() {
         return;
     }
 
+    // Verificar conexión antes de buscar
+    if (!checkConnection()) {
+        showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+        return;
+    }
+
     // Construir búsqueda: "ciudad,código_país" o solo "ciudad"
     const searchQuery = country ? `${city},${country}` : city;
 
@@ -106,6 +154,13 @@ function handleSearch() {
 async function fetchWeatherData(city) {
     try {
         showLoading(true);
+
+        // Verificar conexión antes de hacer la petición
+        if (!checkConnection()) {
+            showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+            showLoading(false);
+            return;
+        }
 
         const url = `${API_BASE_URL}?q=${city}&appid=${API_KEY}&units=metric&lang=es`;
         const response = await fetch(url);
@@ -126,7 +181,12 @@ async function fetchWeatherData(city) {
 
     } catch (error) {
         console.error('Error:', error);
-        showError('Error de conexión. Verifica tu conexión a internet.');
+        // Diferenciar entre error de red y otros errores
+        if (!checkConnection()) {
+            showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+        } else {
+            showError('Error de conexión. Por favor, intenta nuevamente.');
+        }
         showLoading(false);
     }
 }
@@ -238,6 +298,14 @@ function getWeatherByGeolocation() {
 async function fetchWeatherByCoordinates(lat, lon) {
     try {
         showLoading(true);
+        
+        // Verificar conexión antes de hacer la petición
+        if (!checkConnection()) {
+            showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+            showLoading(false);
+            return;
+        }
+        
         const url = `${API_BASE_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`;
         const response = await fetch(url);
 
@@ -251,6 +319,9 @@ async function fetchWeatherByCoordinates(lat, lon) {
 
     } catch (error) {
         console.error('Error:', error);
+        if (!checkConnection()) {
+            showError('Sin conexión a Internet. Verifica tu WiFi o datos móviles.');
+        }
         showLoading(false);
     }
 }
