@@ -1,5 +1,5 @@
 {
-  "buildCommand": "echo 'window.APP_CONFIG = {API_KEY: \"'$VITE_API_KEY'\"}' > public/js/config.js && npm run build",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "public": true,
   "env": {}
