@@ -12,6 +12,8 @@ const weatherDescription = document.getElementById('weatherDescription');
 const weatherIcon = document.getElementById('weatherIcon');
 const humidity = document.getElementById('humidity');
 const windSpeed = document.getElementById('windSpeed');
+const windGust = document.getElementById('windGust');
+const precipitation = document.getElementById('precipitation');
 const airQuality = document.getElementById('airQuality');
 const aqiIndex = document.getElementById('aqiIndex');
 const pollutantDetails = document.getElementById('pollutantDetails');
@@ -332,9 +334,11 @@ function updateWeatherUI(data) {
         name,
         main: { temp, humidity: humid },
         weather: [{ icon, description }],
-        wind: { speed },
+        wind: { speed, gust },
         sys: { sunrise, sunset },
-        dt
+        dt,
+        rain,
+        snow
     } = data;
 
     cityName.textContent = name;
@@ -342,6 +346,18 @@ function updateWeatherUI(data) {
     weatherDescription.textContent = description;
     humidity.textContent = `${humid}%`;
     windSpeed.textContent = `${speed.toFixed(1)} m/s`;
+    windGust.textContent = gust ? `${gust.toFixed(1)} m/s` : '-- m/s';
+
+    // Calcular precipitación total (lluvia + nieve)
+    const rainAmount = rain?.['1h'] || 0;
+    const snowAmount = snow?.['1h'] || 0;
+    const totalPrecipitation = rainAmount + snowAmount;
+    
+    if (totalPrecipitation > 0) {
+        precipitation.textContent = `${totalPrecipitation.toFixed(1)} mm`;
+    } else {
+        precipitation.textContent = '0 mm';
+    }
 
     weatherIcon.src = `https://openweathermap.org/img/wn/${icon}@4x.png`;
     weatherIcon.alt = description;
