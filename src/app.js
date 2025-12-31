@@ -16,6 +16,10 @@ const windGust = document.getElementById('windGust');
 const precipitation = document.getElementById('precipitation');
 const airQuality = document.getElementById('airQuality');
 const aqiIndex = document.getElementById('aqiIndex');
+const uvIndex = document.getElementById('uvIndex');
+const sunriseElement = document.getElementById('sunrise');
+const sunsetElement = document.getElementById('sunset');
+const sunTimesSection = document.getElementById('sunTimesSection');
 const pollutantDetails = document.getElementById('pollutantDetails');
 const pm25 = document.getElementById('pm25');
 const pm10 = document.getElementById('pm10');
@@ -26,6 +30,7 @@ const no2 = document.getElementById('no2');
 const API_KEY = window.APP_CONFIG?.API_KEY || '';
 const API_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 const AIR_QUALITY_API_URL = 'https://api.openweathermap.org/data/2.5/air_pollution';
+const UV_INDEX_API_URL = 'https://api.openweathermap.org/data/2.5/uvi';
 
 // Validar que API_KEY existe
 if (!API_KEY) {
@@ -253,8 +258,9 @@ async function fetchWeatherData(city) {
         }
 
         const data = await response.json();
-        // Obtener también datos de calidad del aire
+        // Obtener también datos de calidad del aire e índice UV
         await fetchAirQualityData(data.coord.lat, data.coord.lon);
+        await fetchUVData(data.coord.lat, data.coord.lon);
         updateWeatherUI(data);
         showLoading(false);
 
@@ -286,6 +292,61 @@ async function fetchAirQualityData(lat, lon) {
     } catch (error) {
         console.error('Error al obtener calidad del aire:', error);
     }
+}
+
+// Obtener índice UV
+async function fetchUVData(lat, lon) {
+    try {
+        const url = `${UV_INDEX_API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.warn('No se pudo obtener datos de UV');
+            return;
+        }
+
+        const data = await response.json();
+        updateUVUI(data);
+    } catch (error) {
+        console.error('Error al obtener índice UV:', error);
+    }
+}
+
+// Actualizar UI con datos de UV
+function updateUVUI(data) {
+    const uv = data.value; // Valor numérico del UV (0-16+)
+
+    // Mapear UV a descripción y color
+    let uvDescription = '';
+    let uvColor = '';
+
+    if (uv <= 2) {
+        uvDescription = 'Bajo';
+        uvColor = '#10b981'; // Verde
+    } else if (uv <= 5) {
+        uvDescription = 'Moderado';
+        uvColor = '#eab308'; // Amarillo
+    } else if (uv <= 7) {
+        uvDescription = 'Alto';
+        uvColor = '#f97316'; // Naranja
+    } else if (uv <= 10) {
+        uvDescription = 'Muy alto';
+        uvColor = '#dc2626'; // Rojo
+    } else {
+        uvDescription = 'Extremo';
+        uvColor = '#7c3aed'; // Púrpura
+    }
+
+    uvIndex.textContent = `${uv.toFixed(1)} (${uvDescription})`;
+    uvIndex.style.color = uvColor;
+}
+
+// Convertir timestamp Unix a HH:MM
+function formatTime(timestamp) {
+    const date = new Date(timestamp * 1000);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
 }
 
 // Actualizar UI con datos de calidad del aire
@@ -358,6 +419,11 @@ function updateWeatherUI(data) {
     } else {
         precipitation.textContent = '0 mm';
     }
+
+    // Mostrar horarios de salida y puesta del sol
+    sunriseElement.textContent = formatTime(sunrise);
+    sunsetElement.textContent = formatTime(sunset);
+    sunTimesSection.style.display = 'block';
 
     weatherIcon.src = `https://openweathermap.org/img/wn/${icon}@4x.png`;
     weatherIcon.alt = description;
@@ -466,6 +532,7 @@ async function fetchWeatherByCoordinates(lat, lon) {
 
         const data = await response.json();
         await fetchAirQualityData(lat, lon);
+        await fetchUVData(lat, lon);
         updateWeatherUI(data);
         showLoading(false);
 
