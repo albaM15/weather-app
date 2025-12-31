@@ -135,6 +135,8 @@ body {
     flex-direction: column;
     gap: 12px;
     animation: slideUp 0.8s ease 0.1s both;
+    position: relative;
+    z-index: 10;
 }
 
 .search-container {
@@ -148,6 +150,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     width: 100%;
+    position: relative;
+    z-index: 10;
 }
 
 .search-inputs {
@@ -267,6 +271,8 @@ body {
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     animation: slideUp 0.8s ease 0.2s both;
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .weather-card:hover {
@@ -556,7 +562,7 @@ body {
     list-style: none;
     margin: 0;
     padding: 0;
-    z-index: 1000;
+    z-index: 9999;
     backdrop-filter: blur(10px);
 }
 
@@ -582,4 +588,74 @@ body {
 .country-suggestions li.selected {
     background-color: rgba(102, 126, 234, 0.4);
     font-weight: 600;
+}
+
+/* Estilos para la calidad del aire */
+.air-quality-badge {
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.pollutant-details {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pollutant-details h3 {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.pollutants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+}
+
+.pollutant-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+}
+
+.pollutant-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.pollutant-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.pollutant-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 600px) {
+    .pollutants-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

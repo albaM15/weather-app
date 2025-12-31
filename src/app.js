@@ -12,10 +12,18 @@ const weatherDescription = document.getElementById('weatherDescription');
 const weatherIcon = document.getElementById('weatherIcon');
 const humidity = document.getElementById('humidity');
 const windSpeed = document.getElementById('windSpeed');
+const airQuality = document.getElementById('airQuality');
+const aqiIndex = document.getElementById('aqiIndex');
+const pollutantDetails = document.getElementById('pollutantDetails');
+const pm25 = document.getElementById('pm25');
+const pm10 = document.getElementById('pm10');
+const o3 = document.getElementById('o3');
+const no2 = document.getElementById('no2');
 
 // Configuración
 const API_KEY = window.APP_CONFIG?.API_KEY || '';
 const API_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
+const AIR_QUALITY_API_URL = 'https://api.openweathermap.org/data/2.5/air_pollution';
 
 // Validar que API_KEY existe
 if (!API_KEY) {
@@ -243,6 +251,8 @@ async function fetchWeatherData(city) {
         }
 
         const data = await response.json();
+        // Obtener también datos de calidad del aire
+        await fetchAirQualityData(data.coord.lat, data.coord.lon);
         updateWeatherUI(data);
         showLoading(false);
 
@@ -256,6 +266,64 @@ async function fetchWeatherData(city) {
         }
         showLoading(false);
     }
+}
+
+// Obtener datos de calidad del aire
+async function fetchAirQualityData(lat, lon) {
+    try {
+        const url = `${AIR_QUALITY_API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.warn('No se pudo obtener datos de calidad del aire');
+            return;
+        }
+
+        const data = await response.json();
+        updateAirQualityUI(data);
+    } catch (error) {
+        console.error('Error al obtener calidad del aire:', error);
+    }
+}
+
+// Actualizar UI con datos de calidad del aire
+function updateAirQualityUI(data) {
+    const { list } = data;
+    if (!list || list.length === 0) return;
+
+    const current = list[0];
+    const aqi = current.main.aqi; // 1-5 (1=Excelente, 5=Muy pobre)
+    const components = current.components;
+
+    // Mapear AQI a descripción
+    const aqiDescriptions = {
+        1: 'Excelente',
+        2: 'Buena',
+        3: 'Moderada',
+        4: 'Deficiente',
+        5: 'Muy pobre'
+    };
+
+    const aqiColors = {
+        1: '#10b981', // Verde
+        2: '#84cc16', // Verde claro
+        3: '#eab308', // Amarillo
+        4: '#f97316', // Naranja
+        5: '#dc2626'  // Rojo
+    };
+
+    airQuality.textContent = aqiDescriptions[aqi] || 'Desconocida';
+    airQuality.style.color = aqiColors[aqi] || '#fff';
+    aqiIndex.textContent = aqi;
+
+    // Actualizar detalles de contaminantes
+    pm25.textContent = components.pm2_5 ? components.pm2_5.toFixed(1) + ' µg/m³' : '--';
+    pm10.textContent = components.pm10 ? components.pm10.toFixed(1) + ' µg/m³' : '--';
+    o3.textContent = components.o3 ? components.o3.toFixed(1) + ' µg/m³' : '--';
+    no2.textContent = components.no2 ? components.no2.toFixed(1) + ' µg/m³' : '--';
+
+    // Mostrar sección de detalles
+    pollutantDetails.style.display = 'block';
 }
 
 // Actualizar UI con datos del clima
@@ -381,6 +449,7 @@ async function fetchWeatherByCoordinates(lat, lon) {
         }
 
         const data = await response.json();
+        await fetchAirQualityData(lat, lon);
         updateWeatherUI(data);
         showLoading(false);
 

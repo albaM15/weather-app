@@ -72,6 +72,41 @@
                             <span class="detail-label">Viento</span>
                             <span id="windSpeed" class="detail-value">-- m/s</span>
                         </div>
+
+                        <!-- Calidad del aire -->
+                        <div class="detail-item">
+                            <span class="detail-label">Calidad del aire</span>
+                            <span id="airQuality" class="detail-value air-quality-badge">---</span>
+                        </div>
+
+                        <!-- Índice AQI -->
+                        <div class="detail-item">
+                            <span class="detail-label">Índice AQI</span>
+                            <span id="aqiIndex" class="detail-value">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Detalles de contaminantes (opcional) -->
+                    <div id="pollutantDetails" class="pollutant-details" style="display: none;">
+                        <h3>Contaminantes</h3>
+                        <div class="pollutants-grid">
+                            <div class="pollutant-item">
+                                <span class="pollutant-label">PM2.5</span>
+                                <span id="pm25" class="pollutant-value">--</span>
+                            </div>
+                            <div class="pollutant-item">
+                                <span class="pollutant-label">PM10</span>
+                                <span id="pm10" class="pollutant-value">--</span>
+                            </div>
+                            <div class="pollutant-item">
+                                <span class="pollutant-label">O₃</span>
+                                <span id="o3" class="pollutant-value">--</span>
+                            </div>
+                            <div class="pollutant-item">
+                                <span class="pollutant-label">NO₂</span>
+                                <span id="no2" class="pollutant-value">--</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
