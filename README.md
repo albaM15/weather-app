@@ -38,11 +38,17 @@ npm install
 
 ### Ejecutar Localmente
 
+**Opción 1: Con Vite (preview)**
 ```bash
 npm run preview
 ```
 
-Luego abre **http://localhost:4173** en tu navegador (o el puerto que muestre en la terminal).
+**Opción 2: Con Node.js**
+```bash
+npm start
+```
+
+Luego abre **http://localhost:4173** o **http://localhost:8080** en tu navegador (o el puerto que muestre en la terminal).
 
 ---
 
